@@ -43,30 +43,26 @@ var controller = {
                 } else {
                     //en caso de que no exista cifrar contraseña
                     bcrypt.hash(params.password, salt, (err, hash) => {
-                        user.password=hash
+                        user.password = hash
                         //guardar usuario
-user.save((err, savedUser)=>{
-    if (err) {
-        return res.status(400).send({
-            status: 'error',
-          message:'error al guardar el usuario'
-        })
-    }
-    if (savedUser) {
-        return res.status(200).send({
-            status: 'success',
-          message:'exito al guardar el usuario',
-          user:savedUser
-        })
-    }
-})
-                    //devolver response
+                        user.save((err, savedUser) => {
+                            if (err) {
+                                return res.status(400).send({
+                                    status: 'error',
+                                    message: 'error al guardar el usuario'
+                                })
+                            }
+                            if (savedUser) {
+                                return res.status(200).send({
+                                    status: 'success',
+                                    message: 'exito al guardar el usuario',
+                                    user: savedUser
+                                })
+                            }
+                        })
 
-                    return res.status(200).send({
-                        status: 'success'
                     })
-                    })
-                    
+
                 }
             })
 
