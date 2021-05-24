@@ -20,6 +20,8 @@ var controller = {
                 /* asignar valores */
                 mark.name = params.name
                 mark.image = params.image
+                mark.link = params.link
+                mark.category = params.category
 
                 mark.save((err, markSaved) => {
                     if (err || !markSaved) {
@@ -57,21 +59,45 @@ var controller = {
 
     getMarks: function (req, res) {
 
-        Mark.find({}, (err, marks) => {
-            if (err || !marks) {
+        Mark.find({})
+            .populate('category')
+            .exec((err, marks) => {
+                if (err || !marks) {
+                    return res.status(500).send({
+                        status: 'error',
+                        message: 'Error al obtener marcas'
+                    })
+                }
+                if (marks) {
+                    return res.status(200).send({
+                        status: 'success',
+                        marks
+                    })
+                }
+            }
+            )
+
+    },
+    deleteMarks: function (req, res) {
+
+        //recoger object id de url
+        var markId = req.params.id;
+
+        Mark.findByIdAndRemove({ _id: markId }, (err, deletedMark) => {
+            if (err || !deletedMark) {
                 return res.status(500).send({
                     status: 'error',
-                    message: 'Error al obtener marcas'
+                    message: 'error en el servidor al eliminar'
                 })
             }
-            if (marks) {
+            if (deletedMark) {
                 return res.status(200).send({
                     status: 'success',
-                    marks
+                    message: 'Exito al eliminar',
+                    mark: deletedMark
                 })
             }
-        }
-        )
+        })
 
     }
 
