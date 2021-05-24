@@ -2,12 +2,13 @@
 
 var CategoryController=require('../controllers/category')
 var express= require('express');
-const app = require('../app');
+var app = require('../app'); 
 var router= express.Router();
 var md_auth = require('../middlewares/authenticated')
 
-app.post('/savecategory',md_auth.authenticated, CategoryController.save)
-app.get('/getcategories',md_auth.authenticated, CategoryController.getCategories)
+router.post('/savecategory',md_auth.authenticated, CategoryController.save)
+router.get('/getcategories',md_auth.authenticated, CategoryController.getCategories)
+router.delete('/deletecategory/:categoryid', md_auth.authenticated, CategoryController.deleteCategory)
 
 
 module.exports=router;

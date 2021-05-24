@@ -13,73 +13,81 @@ var controller = {
     save: function (req, res) {
         //recoger los params de peticion
         let params = req.body
-
-        let validate_email = validator.isEmail(params.email) && !validator.isEmpty(params.email);
-        let validate_password = !validator.isEmpty(params.password);
-
-        if (validate_email && validate_password) {
-
-            //crear objeto de usuario
-            var user = new User();
-
-            //asignar valores a objeto de usuario
-            user.email = params.email.toLowerCase()
-
-            //comprobar si usuario existe
-            User.findOne({ email: user.email.toLowerCase() }, (err, issetUser) => {
-                if (err) {
-                    return res.status(500).send({
-
-                        status: 'error',
-                        message: 'error al comprobar si usuario ya existe'
-                    })
-
-                }
-                if (issetUser) {
-                    return res.status(200).send({
-
-                        status: 'error',
-                        message: 'Usuario ya existe en la base de datos'
-                    })
-                } else {
-                    //en caso de que no exista cifrar contraseña
-                    bcrypt.hash(params.password, salt, (err, hash) => {
-                        user.password = hash
-                        //guardar usuario
-                        user.save((err, savedUser) => {
-                            if (err) {
-                                return res.status(400).send({
-                                    status: 'error',
-                                    message: 'error al guardar el usuario'
-                                })
-                            }
-                            if (savedUser) {
-                                return res.status(200).send({
-                                    status: 'success',
-                                    message: 'exito al guardar el usuario',
-                                    user: savedUser
-                                })
-                            }
-                            if (!savedUser) {
-                                return res.status(403).send({
-                                    status: 'error',
-                                    message: 'error al guardar el usuario',
-                                })
-                            }
+        try {
+            let validate_email = validator.isEmail(params.email) && !validator.isEmpty(params.email);
+            let validate_password = !validator.isEmpty(params.password);
+    
+            if (validate_email && validate_password) {
+    
+                //crear objeto de usuario
+                var user = new User();
+    
+                //asignar valores a objeto de usuario
+                user.email = params.email.toLowerCase()
+    
+                //comprobar si usuario existe
+                User.findOne({ email: user.email.toLowerCase() }, (err, issetUser) => {
+                    if (err) {
+                        return res.status(500).send({
+    
+                            status: 'error',
+                            message: 'error al comprobar si usuario ya existe'
                         })
-
-                    })
-
-                }
-            })
-
-        } else {
-
-            return res.status(200).send({
+    
+                    }
+                    if (issetUser) {
+                        return res.status(200).send({
+    
+                            status: 'error',
+                            message: 'Usuario ya existe en la base de datos'
+                        })
+                    } else {
+                        //en caso de que no exista cifrar contraseña
+                        bcrypt.hash(params.password, salt, (err, hash) => {
+                            user.password = hash
+                            //guardar usuario
+                            user.save((err, savedUser) => {
+                                if (err) {
+                                    return res.status(400).send({
+                                        status: 'error',
+                                        message: 'error al guardar el usuario'
+                                    })
+                                }
+                                if (savedUser) {
+                                    return res.status(200).send({
+                                        status: 'success',
+                                        message: 'exito al guardar el usuario',
+                                        user: savedUser
+                                    })
+                                }
+                                if (!savedUser) {
+                                    return res.status(403).send({
+                                        status: 'error',
+                                        message: 'error al guardar el usuario',
+                                    })
+                                }
+                            })
+    
+                        })
+    
+                    }
+                })
+    
+            } else {
+    
+                return res.status(200).send({
+                    status: 'error',
+                    message: 'no has enviado correctamente los datos'
+                })
+            } 
+        } catch (error) {
+            return res.status(500).send({
                 status: 'error',
-                message: 'no has enviado correctamente los datos'
+                message: 'Error en el servidor'
             })
         }
+
+     
 
 
     },
@@ -87,71 +95,79 @@ var controller = {
         //recoger params de peticion
         var params = req.body
         //validar datos que nos llegan
-        var validate_email = !validator.isEmpty(params.email) && validator.isEmail(params.email);
-        if (validate_email) {
-            //buscar usuarios que coincidan 
-            User.findOne({ email: params.email }, (err, user) => {
-                if (err) {
-                    return res.status(200).send({
-                        status: 'error',
-                        message: 'error al buscar usuario en la Base de datos'
-
-                    })
-                }
-                if (!user) {
-                    return res.status(404).send({
-                        status: 'error',
-                        message: 'usuario no encontrado en la Base de datos'
-
-                    })
-                } else {
-                    //si encuentran comprobar contraseña
-                    bcrypt.compare(params.password, user.password, (err, check) => {
-                        if (err) {
-                            return res.status(500).send({
-                                status: 'error',
-                                message: 'error al intentar loguearse'
-                            })
-                        }
-
-                        if (!check) {
-                            return res.status(500).send({
-                                status: 'error',
-                                message: 'Usuario y/o contraseña no coinciden'
-                            })
-                        }
-                        //coincidencia email y password
-                        if (check) {
-                            //quitar contraseña
-                            user.password = undefined
-                            //si es correcta generar token 
-                            /* Realizada en servicios */
-
-                            if (params.getToken) {
-
-                                //devolver los datos
-                                return res.status(200).send({
-                                    status: 'success',
-                                    token: jwt.createToken(user)
-
+        try {
+            var validate_email = !validator.isEmpty(params.email) && validator.isEmail(params.email);
+            if (validate_email) {
+                //buscar usuarios que coincidan 
+                User.findOne({ email: params.email }, (err, user) => {
+                    if (err) {
+                        return res.status(200).send({
+                            status: 'error',
+                            message: 'error al buscar usuario en la Base de datos'
+    
+                        })
+                    }
+                    if (!user) {
+                        return res.status(404).send({
+                            status: 'error',
+                            message: 'usuario no encontrado en la Base de datos'
+    
+                        })
+                    } else {
+                        //si encuentran comprobar contraseña
+                        bcrypt.compare(params.password, user.password, (err, check) => {
+                            if (err) {
+                                return res.status(500).send({
+                                    status: 'error',
+                                    message: 'error al intentar loguearse'
                                 })
                             }
-
-
-
-                        }
-                    })
-
-                }
-            })
-
-        } else {
+    
+                            if (!check) {
+                                return res.status(500).send({
+                                    status: 'error',
+                                    message: 'Usuario y/o contraseña no coinciden'
+                                })
+                            }
+                            //coincidencia email y password
+                            if (check) {
+                                //quitar contraseña
+                                user.password = undefined
+                                //si es correcta generar token 
+                                /* Realizada en servicios */
+    
+                                if (params.getToken) {
+    
+                                    //devolver los datos
+                                    return res.status(200).send({
+                                        status: 'success',
+                                        token: jwt.createToken(user)
+    
+                                    })
+                                }   
+    
+    
+                            }
+                        })
+    
+                    }
+                })
+    
+            } else {
+                return res.status(200).send({
+                    status: 'error',
+                    message: 'los datos enviados son incorrectos'
+    
+                })
+            } 
+        } catch (error) {
             return res.status(200).send({
                 status: 'error',
                 message: 'los datos enviados son incorrectos'
 
             })
         }
+      
 
 
 

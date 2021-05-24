@@ -8,7 +8,7 @@ var controller = {
 
         /* buscar marca */
         Mark.findById(markId).exec((err, markFounded) => {
-            if (error || !markFounded) {
+            if (err || !markFounded) {
                 return res.status(500).send({
                     status: 'error',
                     message: 'error en el servidor al agregar producto'

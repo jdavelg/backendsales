@@ -6,8 +6,8 @@ const app = require('../app');
 var router = express.Router();
 var md_auth = require('../middlewares/authenticated')
 
-app.post('/saveproduct/:markid', md_auth.authenticated, ProductController.add)
-app.put('/editproduct/:productid', md_auth.authenticated, ProductController.update)
-app.delete('/removeproduct/:productid/:markid', md_auth.authenticated, ProductController.delete)
+router.post('/saveproduct/:markid', md_auth.authenticated, ProductController.add)
+router.put('/editproduct/:productid', md_auth.authenticated, ProductController.update)
+router.delete('/removeproduct/:productid/:markid', md_auth.authenticated, ProductController.delete)
 
 module.exports = router;

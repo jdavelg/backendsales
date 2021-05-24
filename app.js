@@ -23,8 +23,8 @@ app.use(express.json())
 /* Reescribir rutas */
 app.use('/api/category', category_routes)
 app.use('/api/mark', mark_routes)
-app.use('./api/user', user_routes)
-app.use('./api/product', product_routes)
+app.use('/api/user', user_routes)
+app.use('/api/product', product_routes)
 
 /* exportar modulo */
 module.exports=app
