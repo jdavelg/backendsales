@@ -6,7 +6,7 @@ const app = require('../app');
 var router = express.Router();
 var md_auth = require('../middlewares/authenticated')
 
-router.get('/getmark', MarkController.getMarks);
+router.get('/getmarks', MarkController.getMarks);
 router.post('/addmark', md_auth.authenticated, MarkController.save)
 router.delete('/delete/:id', md_auth.authenticated, MarkController.deleteMarks)
 
